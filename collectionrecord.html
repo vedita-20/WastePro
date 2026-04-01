@@ -1,0 +1,161 @@
+{% extends "base.html" %}
+
+{% block content %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+<div class="dashboard-content" style="padding: 40px; background-color: #d6d9d2; min-height: 100vh; color: #4a5553; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+    
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px;">
+        <div>
+            <h1 style="color: #2f3635; margin: 0; font-size: 2.2rem; font-weight: 800; letter-spacing: -1px;">Logistics Hub</h1>
+            <p style="color: #6b7775; margin-top: 5px; font-weight: 600;">Waste Collection & Fleet Records</p>
+        </div>
+        <button class="earth-btn-main" onclick="toggleForm()">
+            <i class="fas fa-plus" style="margin-right: 8px;"></i>Log New Entry
+        </button>
+    </div>
+
+    <div id="addForm" style="display: none; margin-bottom: 40px; background: rgba(255, 255, 255, 0.4); backdrop-filter: blur(12px); padding: 35px; border-radius: 24px; border: 1px solid rgba(255,255,255,0.5); border-left: 6px solid #7a8c5f; box-shadow: 0 15px 35px rgba(0,0,0,0.04); animation: fadeInUp 0.4s ease-out;">
+        <h2 style="color: #2f3635; margin-bottom: 25px; font-size: 1.1rem; font-weight: 700;">New Log Entry</h2>
+        <form action="{{ url_for('collectionrecord') }}" method="POST">
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 25px;">
+                <div class="input-group">
+                    <label class="earth-label">Area</label>
+                    <select name="area_id" class="earth-input" style="width: 100%; box-sizing: border-box;" required>
+                        {% for a in areas %}
+                        <option value="{{ a.area_id }}">{{ a.area_name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label class="earth-label">Vehicle</label>
+                    <select name="vehicle_id" class="earth-input" style="width: 100%; box-sizing: border-box;" required>
+                        {% for v in vehicles %}
+                        <option value="{{ v.vehicle_id }}">{{ v.vehicle_number }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label class="earth-label">Waste Type</label>
+                    <select name="waste_id" class="earth-input" style="width: 100%; box-sizing: border-box;" required>
+                        {% for w in waste_types %}
+                        <option value="{{ w.waste_id }}">{{ w.type_name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 25px;">
+                <div class="input-group">
+                    <label class="earth-label">Collection Date</label>
+                    <input type="date" name="collection_date" class="earth-input" style="width: 100%; box-sizing: border-box;" required>
+                </div>
+                <div class="input-group">
+                    <label class="earth-label">Quantity (KG)</label>
+                    <input type="number" step="0.01" name="quantity_collected_kg" class="earth-input" style="width: 100%; box-sizing: border-box;" placeholder="0.00" required>
+                </div>
+            </div>
+            <button type="submit" class="earth-save-btn">Confirm Collection</button>
+        </form>
+    </div>
+
+    <div style="background: rgba(255, 255, 255, 0.3); border-radius: 24px; overflow: hidden; border: 1px solid rgba(255,255,255,0.4); box-shadow: 0 10px 30px rgba(0,0,0,0.02);">
+        <table style="width: 100%; border-collapse: collapse; text-align: left;">
+            <thead style="background: rgba(0, 0, 0, 0.03);">
+                <tr style="color: #6b7775; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1.5px;">
+                    <th style="padding: 25px;">Date</th>
+                    <th style="padding: 25px;">Area</th>
+                    <th style="padding: 25px;">Vehicle</th>
+                    <th style="padding: 25px;">Waste Type</th>
+                    <th style="padding: 25px;">Weight</th>
+                    <th style="padding: 25px; text-align: right;">Options</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for r in records %}
+                <tr class="earth-row">
+                    <td style="padding: 20px 25px; color: #8c9795; font-family: monospace;">{{ r.collection_date }}</td>
+                    <td style="padding: 20px 25px; font-weight: 700; color: #2f3635;">{{ r.area_name }}</td>
+                    <td style="padding: 20px 25px;"><span class="vehicle-tag">{{ r.vehicle_number }}</span></td>
+                    <td style="padding: 20px 25px; color: #4a5553; font-weight: 600;">{{ r.type_name }}</td>
+                    <td style="padding: 20px 25px; font-weight: 800; color: #7a8c5f;">{{ r.quantity_collected_kg }} <small style="font-size: 0.6rem;">KG</small></td>
+                    <td style="padding: 20px 25px; text-align: right;">
+                        <a href="{{ url_for('editcr', id=r.record_id) }}" class="earth-action edit">EDIT</a>
+                        <a href="{{ url_for('delete_collection', id=r.record_id) }}" class="earth-action delete" onclick="return confirm('Permanent delete?')">REMOVE</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<style>
+    /* Global Earth Sage Styles */
+    .earth-label { display: block; margin-bottom: 8px; font-size: 0.7rem; font-weight: 800; color: #7e8a88; text-transform: uppercase; letter-spacing: 0.5px; }
+    
+    .earth-input { 
+        border: 1px solid rgba(0,0,0,0.08); 
+        background: rgba(255,255,255,0.6); 
+        padding: 12px 15px; 
+        border-radius: 12px; 
+        outline: none; 
+        transition: 0.3s; 
+        color: #2f3635; 
+        font-size: 0.9rem;
+    }
+    .earth-input:focus { background: rgba(255,255,255,0.9); border-color: #7a8c5f; }
+
+    .earth-btn-main { 
+        background: #3e4a49; 
+        color: #e9eceb; 
+        border: none; 
+        padding: 12px 28px; 
+        border-radius: 12px; 
+        font-weight: 700; 
+        cursor: pointer; 
+        transition: 0.3s; 
+        text-transform: uppercase; 
+        font-size: 0.75rem; 
+        letter-spacing: 0.5px;
+    }
+    .earth-btn-main:hover { background: #2f3635; transform: translateY(-2px); }
+
+    .earth-save-btn { 
+        background: #7a8c5f; 
+        color: #fff; 
+        border: none; 
+        padding: 14px 35px; 
+        border-radius: 12px; 
+        font-weight: 700; 
+        cursor: pointer; 
+        transition: 0.3s; 
+        text-transform: uppercase; 
+        font-size: 0.8rem;
+        letter-spacing: 1px;
+    }
+    .earth-save-btn:hover { background: #5d6b49; box-shadow: 0 10px 20px rgba(122, 140, 95, 0.15); }
+
+    .earth-row { border-bottom: 1px solid rgba(0,0,0,0.03); transition: 0.3s; }
+    .earth-row:hover { background: rgba(255,255,255,0.2); }
+
+    .vehicle-tag { background: #c5ccbf; color: #4a5553; padding: 5px 12px; border-radius: 8px; font-size: 0.7rem; font-weight: 800; }
+
+    .earth-action { text-decoration: none; font-weight: 800; font-size: 0.75rem; margin-left: 15px; transition: 0.2s; letter-spacing: 1px; }
+    .earth-action.edit { color: #5d6b49; }
+    .earth-action.delete { color: #a66a6a; }
+    .earth-action:hover { opacity: 0.6; }
+
+    @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+</style>
+
+<script>
+    function toggleForm() {
+        const x = document.getElementById("addForm");
+        x.style.display = (x.style.display === "none" || x.style.display === "") ? "block" : "none";
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WastePro Management</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <style>
+        /* CSS Variables to match your Sage Dashboard */
+        :root {
+            --earth-bg: #d6d9d2;       /* The Sage Background in your screenshot */
+            --earth-dark: #2f3635;     /* Dark Charcoal for text/header */
+            --earth-accent: #7a8c5f;   /* The Green from your Density numbers */
+            --earth-card: rgba(255, 255, 255, 0.3);
+            --earth-text-muted: #6b7775;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: var(--earth-bg);
+            font-family: 'Inter', -apple-system, sans-serif;
+            color: var(--earth-dark);
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Header Styling to match the "Register Area" button style */
+        .main-header {
+            background-color: #4a5553;
+            padding: 10px 40px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1400px;
+            margin: 0 auto;
+            height: 60px;
+        }
+
+        .brand {
+            color: #ffffff;
+            font-size: 1.4rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+
+        .brand span {
+            color: var(--earth-accent);
+        }
+
+        /* Tabs Styling */
+        .nav-tabs {
+            display: flex;
+            gap: 8px;
+        }
+
+        .tab {
+            color: #aeb9b8;
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 600;
+            padding: 10px 18px;
+            border-radius: 10px;
+            transition: 0.3s;
+        }
+
+        .tab:hover {
+            color: #ffffff;
+            background: rgba(255,255,255,0.05);
+        }
+
+        .tab.active {
+            color: #ffffff;
+            background: var(--earth-accent); /* Matches the green numbers in your table */
+        }
+
+        /* User & Logout Section */
+        .nav-right-section {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+        }
+
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .profile-link {
+            text-decoration: none;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+        }
+
+        .user-id {
+            color: #ffffff;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .role-badge {
+            color: var(--earth-accent);
+            font-size: 0.65rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .logout-link {
+            color: #f19066; /* Muted orange/red for logout */
+            text-decoration: none;
+            font-size: 0.8rem;
+            font-weight: 700;
+            padding: 8px 16px;
+            border: 1px solid rgba(241, 144, 102, 0.3);
+            border-radius: 8px;
+            transition: 0.3s;
+        }
+
+        .logout-link:hover {
+            background: #f19066;
+            color: white;
+        }
+
+        /* Flash Notices */
+        .flash-notice {
+            background: var(--earth-accent);
+            color: white;
+            padding: 12px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .main-content {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
+
+    {% if request.endpoint not in ['login', 'signup', 'forgot_password'] %}
+    <header class="main-header">
+        <nav class="nav-container">
+            <div class="brand">Waste<span>Pro</span></div>
+            
+            <div class="nav-right-section">
+                <div class="nav-tabs">
+                    {% if session.get('role') == 'Admin' %}
+                        <a href="{{ url_for('admin_dashboard') }}" class="tab {{ 'active' if request.endpoint == 'admin_dashboard' }}">Dashboard</a>
+                        <a href="{{ url_for('area') }}" class="tab {{ 'active' if request.endpoint == 'area' }}">Area</a>
+                        <a href="{{ url_for('vehicle') }}" class="tab {{ 'active' if request.endpoint == 'vehicle' }}">Vehicle</a>
+                        <a href="{{ url_for('waste_type') }}" class="tab {{ 'active' if request.endpoint == 'waste_type' }}">Waste Type</a>
+                        <a href="{{ url_for('collectionrecord') }}" class="tab {{ 'active' if request.endpoint == 'collectionrecord' }}">Records</a>
+                        <a href="{{ url_for('complaintres') }}" class="tab {{ 'active' if request.endpoint == 'complaintres' }}">Complaints</a>
+
+                    {% elif session.get('role') == 'Citizen' %}
+                        <a href="{{ url_for('citizen_dashboard') }}" class="tab {{ 'active' if request.endpoint == 'citizen_dashboard' }}">Dashboard</a>
+                        <a href="{{ url_for('complaint') }}" class="tab {{ 'active' if request.endpoint == 'complaint' }}">Report Complaints</a>
+                        <a href="{{ url_for('recycle_centre') }}" class="tab {{ 'active' if request.endpoint == 'recycle_centre' }}">Recycle Centres</a>
+                        <a href="{{ url_for('awareness') }}" class="tab {{ 'active' if request.endpoint == 'awareness' }}">Green Awareness</a>
+                    {% endif %}
+                </div>
+
+                <div class="user-menu">
+                    <a href="{{ url_for('profile') }}" class="profile-link">
+                        <span class="user-id">{{ session.get('username', 'User') }}</span>
+                        <span class="role-badge">{{ session.get('role') }}</span>
+                    </a>
+                    <a href="{{ url_for('logout') }}" class="logout-link">Logout</a>
+                </div>
+            </div>
+        </nav>
+    </header>
+    {% endif %}
+
+    <main class="main-content">
+        {% with messages = get_flashed_messages() %}
+          {% if messages %}
+            {% for message in messages %}
+              <div class="flash-notice">{{ message }}</div>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+    </main>
+</body>
+</html>

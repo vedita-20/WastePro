@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="dashboard-content" style="padding: 40px; background-color: #d6d9d2; min-height: 100vh; color: #4a5553; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+    
+    <div style="max-width: 900px; margin: 0 auto;">
+        
+        <div style="display: flex; align-items: center; gap: 30px; margin-bottom: 40px; background: rgba(255, 255, 255, 0.4); backdrop-filter: blur(12px); padding: 30px; border-radius: 24px; border: 1px solid rgba(255,255,255,0.5); box-shadow: 0 10px 30px rgba(0,0,0,0.02);">
+            
+            <div style="width: 100px; height: 100px; background: #3e4a49; border: 3px solid #7a8c5f; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 3rem; color: #e9eceb; font-weight: 800;">
+                {{ user.username[0] | upper }}
+            </div>
+            
+            <div>
+                <h1 style="margin: 0; font-size: 2.2rem; color: #2f3635; font-weight: 800; letter-spacing: -1px;">{{ user.username }}</h1>
+                <p style="color: #6b7775; margin: 5px 0; font-weight: 600;">Member since 2026 • <span style="color: #7a8c5f; font-weight: 800; text-transform: uppercase; font-size: 0.85rem;">{{ user.role }}</span></p>
+            </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 30px;">
+            
+            <div style="background: rgba(255, 255, 255, 0.4); backdrop-filter: blur(12px); padding: 35px; border-radius: 24px; border: 1px solid rgba(255,255,255,0.5); box-shadow: 0 10px 30px rgba(0,0,0,0.02);">
+                <h3 style="margin-top: 0; border-bottom: 1px solid rgba(0,0,0,0.05); padding-bottom: 15px; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1.5px; color: #6b7775; font-weight: 800;">Account Information</h3>
+                
+                <div style="margin-top: 25px;">
+                    <p class="earth-label">Email Address</p>
+                    <p style="font-size: 1.1rem; color: #2f3635; font-weight: 700; margin-bottom: 25px;">{{ user.email }}</p>
+                    
+                    <p class="earth-label">Security Status</p>
+                    <p style="font-size: 1rem; color: #5d6b49; font-weight: 700; margin-bottom: 25px;">
+                        <span style="color: #7a8c5f; margin-right: 5px;">●</span> Protected by Recovery PIN
+                    </p>
+                </div>
+
+                <a href="{{ url_for('edit_user', id=user.user_id) }}" class="earth-btn-main" style="text-decoration: none; display: inline-block;">
+                    Update Credentials
+                </a>
+            </div>
+
+            <div style="background: rgba(255, 255, 255, 0.25); backdrop-filter: blur(12px); padding: 30px; border-radius: 24px; border: 1px solid rgba(255,255,255,0.3); height: fit-content;">
+                <h3 style="margin-top: 0; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1.5px; color: #7a8c5f; font-weight: 800;">Pro Tip</h3>
+                <p style="color: #4a5553; font-size: 0.85rem; line-height: 1.6; font-weight: 600;">
+                    Did you know that recycling 1 ton of paper saves 17 trees? Check your <strong>Recycling Records</strong> to see how many trees you've saved this month!
+                </p>
+                <hr style="border: 0; border-top: 1px solid rgba(0,0,0,0.05); margin: 20px 0;">
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Labels */
+    .earth-label { 
+        display: block; 
+        margin-bottom: 5px; 
+        font-size: 0.7rem; 
+        font-weight: 800; 
+        color: #8c9795; 
+        text-transform: uppercase; 
+        letter-spacing: 0.5px;
+    }
+
+    /* Buttons */
+    .earth-btn-main { 
+        background: #3e4a49; 
+        color: #e9eceb; 
+        border: none; 
+        padding: 12px 28px; 
+        border-radius: 12px; 
+        font-weight: 700; 
+        cursor: pointer; 
+        transition: 0.3s; 
+        text-transform: uppercase; 
+        font-size: 0.8rem;
+        letter-spacing: 0.5px;
+    }
+    .earth-btn-main:hover { 
+        background: #2f3635; 
+        transform: scale(1.02); 
+        box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+    }
+</style>
+{% endblock %}

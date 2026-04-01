@@ -1,0 +1,145 @@
+{% extends "base.html" %}
+
+{% block content %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+<div class="dashboard-content" style="padding: 40px; background-color: #d6d9d2; min-height: 100vh; color: #4a5553; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+    
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px;">
+        <div>
+            <h1 style="color: #2f3635; margin: 0; font-size: 2.2rem; font-weight: 800; letter-spacing: -1px;">Resolution Center</h1>
+            <p style="color: #6b7775; margin-top: 5px; font-weight: 600;">Validating and closing reported system discrepancies.</p>
+        </div>
+        <div style="background: rgba(255, 255, 255, 0.4); padding: 10px 20px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.5);">
+            <span style="font-size: 0.7rem; font-weight: 800; color: #8c9795; text-transform: uppercase;">Pending Tasks:</span>
+            <span style="margin-left: 10px; font-weight: 900; color: #d9b585;">{{ pending|length }}</span>
+        </div>
+    </div>
+
+    <div style="background: rgba(255, 255, 255, 0.4); backdrop-filter: blur(12px); padding: 35px; border-radius: 24px; border: 1px solid rgba(255,255,255,0.5); border-left: 6px solid #7a8c5f; box-shadow: 0 15px 35px rgba(0,0,0,0.04); margin-bottom: 40px;">
+        <h2 style="color: #2f3635; margin-bottom: 25px; font-size: 1.1rem; font-weight: 700;">Submit Official Resolution</h2>
+        
+        <form action="{{ url_for('complaintres') }}" method="POST" enctype="multipart/form-data">
+            <div style="display: grid; grid-template-columns: 1fr 1.5fr 1fr; gap: 20px; align-items: flex-end;">
+                
+                <div class="input-group">
+                    <label class="earth-label">Pending Complaint</label>
+                    <select name="complaint_id" class="earth-input" style="width: 100%; box-sizing: border-box;" required>
+                        {% for p in pending %}
+                        <option value="{{ p.complaint_id }}">#{{ p.complaint_id }}: {{ p.issue_description[:25] }}...</option>
+                        {% else %}
+                        <option disabled>No pending complaints found</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <label class="earth-label">Resolution Notes</label>
+                    <input type="text" name="resolution_notes" class="earth-input" style="width: 100%; box-sizing: border-box;" placeholder="Describe actions taken..." required>
+                </div>
+
+                <div class="input-group">
+                    <label class="earth-label">Proof (Image)</label>
+                    <input type="file" name="proof_image" class="earth-input" style="width: 100%; box-sizing: border-box;" accept="image/*" required>
+                </div>
+
+            </div>
+            <div style="margin-top: 25px;">
+                <button type="submit" class="earth-save-btn">Confirm & Close Issue</button>
+            </div>
+        </form>
+    </div>
+
+    <div style="background: rgba(255, 255, 255, 0.3); border-radius: 24px; overflow: hidden; border: 1px solid rgba(255,255,255,0.4); box-shadow: 0 10px 30px rgba(0,0,0,0.02);">
+        <table style="width: 100%; border-collapse: collapse; text-align: left;">
+            <thead style="background: rgba(0, 0, 0, 0.03);">
+                <tr style="color: #6b7775; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1.5px;">
+                    <th style="padding: 25px;">Ref ID</th>
+                    <th style="padding: 25px;">Timeline</th>
+                    <th style="padding: 25px;">Issue Detail</th>
+                    <th style="padding: 25px;">Resolution Proof</th>
+                    <th style="padding: 25px; text-align: right;">Staff</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for r in resolutions %}
+                <tr class="earth-row">
+                    <td style="padding: 20px 25px;">
+                        <span style="font-family: monospace; color: #8c9795; font-weight: 700;">#{{ r.resolution_id }}</span>
+                    </td>
+                    <td style="padding: 20px 25px;">
+                        <div style="color: #2f3635; font-weight: 700;">{{ r.resolution_date }}</div>
+                        <div style="font-size: 0.65rem; color: #8c9795; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 3px;">Filed: {{ r.complaint_date }}</div>
+                    </td>
+                    <td style="padding: 20px 25px;">
+                        <div style="color: #7a8c5f; font-weight: 800; font-size: 0.9rem;">{{ r.area_name }}</div>
+                        <div style="font-size: 0.85rem; color: #6b7775; line-height: 1.4;">{{ r.issue_description }}</div>
+                    </td>
+                    <td style="padding: 20px 25px;">
+                        <div style="display: flex; gap: 15px; align-items: center;">
+                            {% if r.resolution_image %}
+                            <a href="{{ url_for('static', filename='resolutions/' + r.resolution_image) }}" target="_blank">
+                                <img src="{{ url_for('static', filename='resolutions/' + r.resolution_image) }}" style="width: 60px; height: 45px; object-fit: cover; border-radius: 8px; border: 2px solid #fff; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
+                            </a>
+                            {% endif %}
+                            <div style="background: rgba(255,255,255,0.5); padding: 10px 15px; border-radius: 10px; border: 1px solid rgba(0,0,0,0.03); font-style: italic; font-size: 0.85rem; color: #4a5553;">
+                                "{{ r.resolution_notes }}"
+                            </div>
+                        </div>
+                    </td>
+                    <td style="padding: 20px 25px; text-align: right;">
+                        <span class="staff-badge">{{ r.resolved_by }}</span>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<style>
+    /* Earth Sage Styling Toolkit */
+    .earth-label { display: block; margin-bottom: 8px; font-size: 0.7rem; font-weight: 800; color: #7e8a88; text-transform: uppercase; letter-spacing: 0.5px; }
+    
+    .earth-input { 
+        border: 1px solid rgba(0,0,0,0.08); 
+        background: rgba(255,255,255,0.6); 
+        padding: 12px 15px; 
+        border-radius: 12px; 
+        outline: none; 
+        transition: 0.3s; 
+        color: #2f3635; 
+        font-size: 0.9rem;
+        height: 48px;
+    }
+    .earth-input:focus { background: rgba(255,255,255,0.9); border-color: #7a8c5f; }
+
+    .earth-save-btn { 
+        background: #3e4a49; 
+        color: #fff; 
+        border: none; 
+        padding: 14px 35px; 
+        border-radius: 12px; 
+        font-weight: 700; 
+        cursor: pointer; 
+        transition: 0.3s; 
+        text-transform: uppercase; 
+        font-size: 0.8rem;
+        letter-spacing: 1px;
+    }
+    .earth-save-btn:hover { background: #2f3635; transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
+
+    .earth-row { border-bottom: 1px solid rgba(0,0,0,0.03); transition: 0.3s; }
+    .earth-row:hover { background: rgba(255,255,255,0.2); }
+
+    .staff-badge {
+        background: #c5ccbf;
+        color: #4a5553;
+        padding: 6px 14px;
+        border-radius: 8px;
+        font-size: 0.75rem;
+        font-weight: 800;
+        letter-spacing: 0.5px;
+    }
+</style>
+{% endblock %}

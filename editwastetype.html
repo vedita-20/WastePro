@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="dashboard-content animate-main" style="display:flex; justify-content:center; align-items:center; min-height:80vh;">
+    <div style="background:#0a0a0a; padding:40px; border-radius:20px; border-top:4px solid #00f2ff; width:400px;">
+        <h2 style="color:#fff; margin-bottom:20px;">Edit Waste Type</h2>
+        <form action="{{ url_for('edit_waste', id=w.waste_type_id) }}" method="POST">
+            <div style="margin-bottom:20px;">
+                <label style="color:#666; display:block; margin-bottom:10px;">Type Name</label>
+                <input type="text" name="type_name" value="{{ w.type_name }}" style="width:100%; background:#000; border:1px solid #222; padding:12px; color:#fff; border-radius:8px;">
+            </div>
+            <div style="margin-bottom:30px;">
+                <label style="color:#fff; cursor:pointer;">
+                    <input type="checkbox" name="recyclable" {% if w.recyclable %}checked{% endif %}> 
+                    Mark as Recyclable
+                </label>
+            </div>
+            <div style="display:flex; gap:10px;">
+                <button type="submit" class="save-btn-cyan" style="flex:2;">Update</button>
+                <a href="{{ url_for('waste_type') }}" style="flex:1; text-align:center; color:#555; text-decoration:none; padding:12px; border:1px solid #222; border-radius:30px;">Back</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

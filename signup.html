@@ -1,0 +1,181 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="signup-wrapper">
+    <div class="signup-card-container">
+        <div class="brand-header">
+            <h1>Waste<span style="color: #7a8c5f;">Pro</span></h1>
+            <p>Join the movement</p>
+        </div>
+
+        <div class="auth-card">
+            <h3>Create Account</h3>
+            
+            <form action="{{ url_for('signup') }}" method="POST">
+                <div class="role-tabs">
+                    <label class="tab-item">
+                        <input type="radio" name="role" value="Citizen" checked onclick="toggleAdmin(false)">
+                        <div class="tab-content citizen">Citizen</div>
+                    </label>
+                    <label class="tab-item">
+                        <input type="radio" name="role" value="Admin" onclick="toggleAdmin(true)">
+                        <div class="tab-content admin">Admin</div>
+                    </label>
+                </div>
+
+                <div id="adminKeySection" style="display: none; margin-bottom: 20px; background: rgba(62, 74, 73, 0.05); padding: 15px; border-radius: 12px; border-left: 4px solid #3e4a49;">
+                    <label class="field-label" style="color: #3e4a49;">Authorization Required</label>
+                    <input type="password" name="admin_key" class="sage-input" placeholder="Enter Admin Key">
+                </div>
+
+                <div class="input-grid">
+                    <div class="input-group">
+                        <label class="field-label">Username</label>
+                        <input type="text" name="username" class="sage-input" placeholder="e.g. jdoe_01" required>
+                    </div>
+
+                    <div class="input-group">
+                        <label class="field-label">Email Address</label>
+                        <input type="email" name="email" class="sage-input" placeholder="name@example.com" required>
+                    </div>
+
+                    <div class="input-group">
+                        <label class="field-label">Recovery PIN</label>
+                        <input type="text" name="recovery_pin" class="sage-input" placeholder="4-Digit PIN" maxlength="4" pattern="\d{4}" required>
+                    </div>
+
+                    <div class="input-group">
+                        <label class="field-label">Password</label>
+                        <input type="password" name="password" class="sage-input" placeholder="••••••••" required>
+                    </div>
+                </div>
+                
+                <button type="submit" class="signup-btn-primary">Get Started</button>
+            </form>
+
+            <div class="auth-footer">
+                <p>Already a member? <a href="{{ url_for('login') }}" class="footer-link primary">Login</a></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Layout & Background */
+    .signup-wrapper {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        background-color: #d6d9d2; /* Signature Stone */
+        padding: 40px 20px;
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    .signup-card-container {
+        width: 100%;
+        max-width: 550px; /* Slightly wider for signup fields */
+        text-align: center;
+    }
+
+    .brand-header { margin-bottom: 30px; }
+    .brand-header h1 { font-size: 2.5rem; font-weight: 800; color: #2f3635; margin: 0; letter-spacing: -1px; }
+    .brand-header p { color: #7e8a88; font-weight: 600; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 2px; }
+
+    /* The Main Glass Card */
+    .auth-card {
+        background: rgba(255, 255, 255, 0.4);
+        backdrop-filter: blur(10px);
+        padding: 40px;
+        border-radius: 24px;
+        border: 1px solid rgba(255, 255, 255, 0.5);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.05);
+        text-align: left;
+    }
+
+    .auth-card h3 { color: #2f3635; font-size: 1.2rem; font-weight: 800; margin-bottom: 25px; text-align: center; margin-top: 0; }
+
+    /* Role Toggles */
+    .role-tabs { display: flex; gap: 12px; margin-bottom: 30px; }
+    .tab-item { flex: 1; cursor: pointer; }
+    .tab-item input { display: none; }
+    
+    .tab-content {
+        padding: 12px;
+        text-align: center;
+        border-radius: 12px;
+        font-size: 0.75rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        background: rgba(0,0,0,0.03);
+        color: #7e8a88;
+        transition: 0.3s;
+    }
+
+    .tab-item input:checked + .citizen { background: #7a8c5f; color: white; }
+    .tab-item input:checked + .admin { background: #3e4a49; color: white; }
+
+    /* Inputs Grid */
+    .input-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px 20px;
+        margin-bottom: 25px;
+    }
+
+    @media (max-width: 500px) { .input-grid { grid-template-columns: 1fr; } }
+
+    .field-label {
+        display: block;
+        font-size: 0.7rem;
+        font-weight: 800;
+        color: #7e8a88;
+        text-transform: uppercase;
+        margin-bottom: 8px;
+        margin-left: 4px;
+    }
+
+    .sage-input {
+        width: 100%;
+        padding: 14px 18px;
+        background: rgba(255, 255, 255, 0.6);
+        border: 1px solid rgba(0,0,0,0.08);
+        border-radius: 12px;
+        outline: none;
+        font-size: 0.95rem;
+        transition: 0.3s;
+        box-sizing: border-box;
+    }
+
+    .sage-input:focus { border-color: #7a8c5f; background: #fff; }
+
+    /* Buttons */
+    .signup-btn-primary {
+        width: 100%;
+        padding: 16px;
+        background: #2f3635;
+        color: white;
+        border: none;
+        border-radius: 12px;
+        font-weight: 800;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+
+    .signup-btn-primary:hover { background: #3e4a49; transform: translateY(-2px); }
+
+    .auth-footer { margin-top: 25px; text-align: center; font-size: 0.85rem; color: #7e8a88; font-weight: 600; }
+    .footer-link { text-decoration: none; font-weight: 800; transition: 0.2s; }
+    .footer-link.primary { color: #7a8c5f; }
+    .footer-link:hover { opacity: 0.7; }
+</style>
+
+<script>
+    function toggleAdmin(show) {
+        document.getElementById('adminKeySection').style.display = show ? 'block' : 'none';
+    }
+</script>
+{% endblock %}

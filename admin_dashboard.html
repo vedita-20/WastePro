@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="admin-container" style="padding: 40px; background-color: #d6d9d2; min-height: 100vh; font-family: 'Inter', -apple-system, sans-serif;">
+    
+    <div class="kpi-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 25px; margin-bottom: 40px;">
+        
+        <div class="kpi-card olive-border">
+            <p class="kpi-label">Total City Waste Collected</p>
+            <h3 class="kpi-value">{{ total_waste }} <span style="font-size: 1.2rem; font-weight: 600;">kg</span></h3>
+        </div>
+
+        <div class="kpi-card charcoal-border">
+            <p class="kpi-label">Active Fleet Vehicles</p>
+            <h3 class="kpi-value">{{ v_count }}</h3>
+        </div>
+
+    </div>
+
+    <div class="analytics-grid" style="display: grid; grid-template-columns: 2fr 1fr; gap: 25px;">
+        
+        <div class="chart-container">
+            <h4 class="chart-title">Weekly Waste Collection Trend</h4>
+            <div class="canvas-wrapper" style="position: relative; height: 320px;">
+                <canvas id="lineChart"></canvas>
+            </div>
+        </div>
+
+        <div class="chart-container">
+            <h4 class="chart-title">Efficiency Status</h4>
+            <div class="canvas-wrapper" style="position: relative; height: 320px;">
+                <canvas id="doughnutChart"></canvas>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<style>
+    /* Card Styles matching your screenshot logic */
+    .kpi-card { 
+        background: rgba(255, 255, 255, 0.3); 
+        backdrop-filter: blur(12px);
+        padding: 30px; 
+        border-radius: 24px; 
+        border: 1px solid rgba(255, 255, 255, 0.4);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.02);
+        transition: 0.3s;
+    }
+    .kpi-card:hover { transform: translateY(-5px); background: rgba(255, 255, 255, 0.4); }
+    
+    .olive-border { border-left: 6px solid #7a8c5f; }
+    .charcoal-border { border-left: 6px solid #3e4a49; }
+
+    .kpi-label { color: #6b7775; margin: 0; font-size: 0.75rem; text-transform: uppercase; font-weight: 800; letter-spacing: 1px; }
+    .kpi-value { color: #2f3635; font-size: 2.4rem; margin: 10px 0 0 0; font-weight: 800; letter-spacing: -1px; }
+
+    /* Chart Containers */
+    .chart-container { 
+        background: rgba(255, 255, 255, 0.3); 
+        padding: 35px; 
+        border-radius: 24px; 
+        border: 1px solid rgba(255, 255, 255, 0.4);
+    }
+    .chart-title { margin: 0 0 25px 0; color: #6b7775; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 2px; font-weight: 800; }
+
+    @media (max-width: 1000px) { .analytics-grid { grid-template-columns: 1fr; } }
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Data from Flask
+    const wasteLabels = {{ days|tojson|safe }}; 
+    const wasteData = {{ waste_trend|tojson|safe }};
+    const effLabels = {{ eff_labels|tojson|safe }};
+    const effValues = {{ eff_values|tojson|safe }};
+
+    // Line Chart - Earth Sage Style
+    new Chart(document.getElementById('lineChart'), {
+        type: 'line',
+        data: {
+            labels: wasteLabels,
+            datasets: [{
+                label: 'Waste (kg)',
+                data: wasteData,
+                borderColor: '#7a8c5f',
+                backgroundColor: 'rgba(122, 140, 95, 0.1)',
+                fill: true,
+                tension: 0.4,
+                borderWidth: 4,
+                pointBackgroundColor: '#fff',
+                pointBorderColor: '#7a8c5f',
+                pointRadius: 6
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+                y: { grid: { color: 'rgba(0,0,0,0.05)' }, border: {display: false}, ticks: { color: '#8c9795', font: { weight: '600' } } },
+                x: { grid: { display: false }, ticks: { color: '#6b7775', font: { weight: '600' } } }
+            }
+        }
+    });
+
+    // Doughnut Chart - Earth Sage Style
+    new Chart(document.getElementById('doughnutChart'), {
+        type: 'doughnut',
+        data: {
+            labels: effLabels,
+            datasets: [{
+                data: effValues,
+                backgroundColor: ['#7a8c5f', '#c5ccbf', '#3e4a49', '#a66a6a'],
+                borderWidth: 0,
+                hoverOffset: 20
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: '80%',
+            plugins: {
+                legend: { 
+                    position: 'bottom', 
+                    labels: { 
+                        color: '#6b7775', 
+                        padding: 25,
+                        font: { size: 11, weight: '700' },
+                        usePointStyle: true
+                    } 
+                }
+            }
+        }
+    });
+</script>
+{% endblock %}

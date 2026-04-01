@@ -1,0 +1,244 @@
+{% extends "base.html" %}
+
+{% block content %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+<style>
+    :root { 
+        --neon-cyan: #00f2ff; 
+        --glow: rgba(0, 242, 255, 0.2); 
+        --dark-bg: #050505;
+        --dark-card: #0a0a0a;
+        --header-bg: #121212;
+        --border-muted: #1a1a1a; 
+        --text-bright: #ffffff;
+        --text-silver: #d0d0d0;
+    }
+
+    /* Main Container Padding */
+    .dashboard-content { 
+        padding: 20px; 
+        font-family: 'Inter', sans-serif; 
+        background-color: var(--dark-bg);
+        min-height: 100vh;
+    }
+
+    /* Form Card Styling */
+    .log-form-container {
+        margin: 20px 30px;
+        background: var(--dark-card);
+        border: 1px solid var(--border-muted);
+        border-radius: 15px;
+        padding: 25px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+
+    .form-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 20px;
+    }
+
+    .input-label {
+        display: block;
+        color: #666; /* Kept dim to make the White input pop */
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        font-weight: 800;
+        margin-bottom: 8px;
+        letter-spacing: 1.2px;
+    }
+
+    .custom-input {
+        width: 100%;
+        background: #000;
+        border: 1px solid #222;
+        color: var(--text-bright);
+        padding: 12px 15px;
+        border-radius: 10px;
+        outline: none;
+        transition: 0.3s;
+        font-size: 0.9rem;
+    }
+
+    .custom-input:focus {
+        border-color: var(--neon-cyan);
+        box-shadow: 0 0 12px var(--glow);
+    }
+
+    /* Action Buttons */
+    .action-btn {
+        background: transparent;
+        color: var(--neon-cyan);
+        border: 1px solid var(--neon-cyan);
+        padding: 10px 25px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 800;
+        cursor: pointer;
+        transition: 0.3s;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        display: inline-block;
+        text-decoration: none;
+    }
+
+    .action-btn:hover {
+        background: var(--neon-cyan);
+        color: #000;
+        box-shadow: 0 0 15px var(--glow);
+    }
+
+    /* --- THE TABLE: VIBRANT & HIGH CONTRAST --- */
+    .records-table-wrapper {
+        margin: 20px 30px;
+        background: var(--dark-card);
+        border: 1px solid var(--border-muted);
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 15px 40px rgba(0,0,0,0.6);
+    }
+
+    .records-table {
+        width: 100%;
+        border-collapse: collapse;
+        text-align: left;
+    }
+
+    .records-table thead {
+        background-color: var(--header-bg);
+        border-bottom: 2px solid var(--neon-cyan); /* Bold cyan accent line */
+    }
+
+    .records-table th { 
+        padding: 22px 20px; 
+        color: var(--text-bright); /* Pure White Header Text */
+        font-size: 0.75rem; 
+        text-transform: uppercase;
+        font-weight: 900;
+        letter-spacing: 2px;
+        text-shadow: 0 0 8px rgba(255, 255, 255, 0.1);
+    }
+
+    .records-table td {
+        padding: 18px 20px;
+        border-bottom: 1px solid var(--border-muted);
+        color: var(--text-silver);
+        font-size: 0.95rem;
+        transition: 0.2s;
+    }
+
+    .records-table tr:hover { 
+        background: rgba(0, 242, 255, 0.03); 
+    }
+    
+    .records-table tr:hover td {
+        color: var(--text-bright);
+    }
+
+    .accent-text { 
+        color: var(--neon-cyan); 
+        font-family: 'JetBrains Mono', monospace; 
+        font-weight: 800; 
+    }
+
+    .delete-link {
+        color: #ff4d4d;
+        text-decoration: none;
+        font-size: 0.75rem;
+        margin-left: 20px;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+    
+    .delete-link:hover { 
+        color: #ff0000;
+        text-shadow: 0 0 10px rgba(255, 77, 77, 0.3);
+    }
+</style>
+
+<div class="dashboard-content">
+    <div style="padding: 20px 30px; display: flex; justify-content: space-between; align-items: center;">
+        <div>
+            <h2 style="color: var(--text-bright); font-weight: 900; margin: 0; font-size: 2rem; letter-spacing: -0.5px;">Recycling Records</h2>
+            <p style="color: #666; font-size: 0.9rem; margin-top: 5px;">Tracking your environmental contributions in real-time.</p>
+        </div>
+        <i class="fas fa-leaf" style="color: var(--neon-cyan); font-size: 2rem; opacity: 0.5;"></i>
+    </div>
+
+    <div class="log-form-container">
+        <form method="POST">
+            <div class="form-grid">
+                <div>
+                    <label class="input-label">Centre Location</label>
+                    <select name="center_id" class="custom-input" required>
+                        {% for c in centers %}
+                        <option value="{{ c.center_id }}">{{ c.center_name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div>
+                    <label class="input-label">Waste Category</label>
+                    <select name="waste_id" class="custom-input" required>
+                        {% for w in waste_types %}
+                        <option value="{{ w.waste_id }}">{{ w.type_name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div>
+                    <label class="input-label">Quantity (KG)</label>
+                    <input type="number" step="0.01" name="quantity_received_kg" class="custom-input" placeholder="0.00" required>
+                </div>
+                <div>
+                    <label class="input-label">Processing Date</label>
+                    <input type="date" name="processing_date" class="custom-input" required>
+                </div>
+            </div>
+            <div style="margin-top: 25px; text-align: right;">
+                <button type="submit" class="action-btn">
+                    <i class="fas fa-plus-circle" style="margin-right: 8px;"></i>Log Activity
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <div class="records-table-wrapper">
+        <table class="records-table">
+            <thead>
+                <tr>
+                    <th><i class="far fa-calendar-alt" style="margin-right: 8px;"></i>Date</th>
+                    <th>Location</th>
+                    <th>Waste Type</th>
+                    <th>Weight</th>
+                    <th style="text-align: right;">Management</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for r in records %}
+                <tr>
+                    <td style="font-family: monospace; color: #888;">{{ r.processing_date }}</td>
+                    <td>
+                        <div style="color: var(--text-bright); font-weight: 700;">{{ r.center_name }}</div>
+                        <div style="font-size: 0.7rem; color: #555;">ID: #{{ r.recycle_id }}</div>
+                    </td>
+                    <td>{{ r.type_name }}</td>
+                    <td class="accent-text">{{ r.quantity_received_kg }} kg</td>
+                    <td style="text-align: right;">
+                        <a href="{{ url_for('editrr', id=r.recycle_id) }}" class="action-btn" style="padding: 5px 15px; font-size: 0.7rem;">Edit</a>
+                        <a href="{{ url_for('deleterr', id=r.recycle_id) }}" class="delete-link" onclick="return confirm('Delete this record permanently?')">Delete</a>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="5" style="padding: 60px; text-align: center; color: #444; font-style: italic;">
+                        <i class="fas fa-box-open" style="display: block; font-size: 2rem; margin-bottom: 15px;"></i>
+                        No records found. Start your green journey today!
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

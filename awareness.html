@@ -1,0 +1,173 @@
+{% extends "base.html" %}
+
+{% block content %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+<div class="dashboard-content" style="padding: 40px; background-color: #d6d9d2; min-height: 100vh; color: #4a5553; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+    
+    <div style="text-align: center; padding: 50px 20px; background: linear-gradient(180deg, rgba(122, 140, 95, 0.1) 0%, transparent 100%); border-radius: 24px;">
+        <h1 style="color: #2f3635; font-size: 2.8rem; font-weight: 800; margin-bottom: 10px; letter-spacing: -1px;">Our Green Community</h1>
+        <p style="color: #6b7775; font-size: 1.1rem; font-weight: 600;">Simple steps for a cleaner neighborhood. Your actions at home matter.</p>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 25px; padding: 30px 20px;">
+        
+        <div class="citizen-card" style="border-bottom: 4px solid #7a8c5f;">
+            <span style="font-size: 2.5rem; margin-bottom: 15px; display: block;">🍏</span>
+            <h3 style="color: #2f3635; margin-bottom: 10px; font-weight: 700;">Wet Waste</h3>
+            <p style="color: #6b7775; font-size: 0.9rem; margin-bottom: 20px; font-weight: 600;">Organic kitchen waste that can be turned into fertilizer.</p>
+            <div class="list-item"><i class="fas fa-check"></i> Fruit & Veggie Peels</div>
+            <div class="list-item"><i class="fas fa-check"></i> Leftover Food</div>
+            <div class="list-item"><i class="fas fa-check"></i> Tea Leaves / Coffee Grounds</div>
+            <div class="list-item"><i class="fas fa-check"></i> Flower Waste</div>
+        </div>
+
+        <div class="citizen-card" style="border-bottom: 4px solid #3e4a49;">
+            <span style="font-size: 2.5rem; margin-bottom: 15px; display: block;">📦</span>
+            <h3 style="color: #2f3635; margin-bottom: 10px; font-weight: 700;">Dry Waste</h3>
+            <p style="color: #6b7775; font-size: 0.9rem; margin-bottom: 20px; font-weight: 600;">Non-decaying items that are sent for recycling.</p>
+            <div class="list-item"><i class="fas fa-check"></i> Paper & Cardboard</div>
+            <div class="list-item"><i class="fas fa-check"></i> Plastic Bags & Bottles</div>
+            <div class="list-item"><i class="fas fa-check"></i> Glass Bottles & Jars</div>
+            <div class="list-item"><i class="fas fa-check"></i> Metal Cans & Tins</div>
+        </div>
+
+        <div class="citizen-card" style="border-bottom: 4px solid #a66a6a;">
+            <span style="font-size: 2.5rem; margin-bottom: 15px; display: block;">⚠️</span>
+            <h3 style="color: #2f3635; margin-bottom: 10px; font-weight: 700;">Special Waste</h3>
+            <p style="color: #6b7775; font-size: 0.9rem; margin-bottom: 20px; font-weight: 600;">Items that require careful disposal for safety.</p>
+            <div class="list-item"><i class="fas fa-check"></i> Batteries & Electronics</div>
+            <div class="list-item"><i class="fas fa-check"></i> Expired Medicines</div>
+            <div class="list-item"><i class="fas fa-check"></i> Broken Glass (Wrap it!)</div>
+            <div class="list-item"><i class="fas fa-check"></i> Sanitary Waste (Red Dot)</div>
+        </div>
+    </div>
+
+    <div style="padding: 0 20px;">
+        <div class="impact-toggle" onclick="toggleImpact()">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span style="color: #2f3635; font-weight: 700;">Why should I segregate?</span>
+                <span id="arrow" style="color: #7a8c5f; font-weight: 800;">▼</span>
+            </div>
+            <p id="impact-text" style="display: none; color: #4a5553; margin-top: 15px; font-size: 0.95rem; line-height: 1.6; font-weight: 500;">
+                When you separate wet and dry waste, you help reduce landfill size by up to 50%. Wet waste becomes compost for farmers, and dry waste provides jobs for recycling workers. Most importantly, it keeps our soil and water free from toxins!
+            </p>
+        </div>
+    </div>
+
+    <div class="quick-tips">
+        <div class="tip-box">
+            <h2 style="margin:0; font-size: 1.8rem; font-weight: 800; color: #e9eceb;">9:00 AM</h2>
+            <p style="margin:0; font-size: 0.7rem; font-weight: 800; text-transform: uppercase; color: #c5ccbf; letter-spacing: 0.5px;">Collection Starts</p>
+        </div>
+        <div class="tip-box" style="border-left: 1px solid rgba(255,255,255,0.1); border-right: 1px solid rgba(255,255,255,0.1);">
+            <h2 style="margin:0; font-size: 1.8rem; font-weight: 800; color: #e9eceb;">2 Bins</h2>
+            <p style="margin:0; font-size: 0.7rem; font-weight: 800; text-transform: uppercase; color: #c5ccbf; letter-spacing: 0.5px;">Minimum Required</p>
+        </div>
+        <div class="tip-box">
+            <h2 style="margin:0; font-size: 1.8rem; font-weight: 800; color: #e9eceb;">Zero</h2>
+            <p style="margin:0; font-size: 0.7rem; font-weight: 800; text-transform: uppercase; color: #c5ccbf; letter-spacing: 0.5px;">Littering Tolerance</p>
+        </div>
+    </div>
+
+    <div style="text-align: center; padding-bottom: 60px;">
+        <p style="color: #6b7775; font-weight: 600; margin-bottom: 20px;">Found a problem in your area?</p>
+        <a href="{{ url_for('complaint') }}" class="earth-action-btn">Report an Issue</a>
+    </div>
+</div>
+
+<style>
+    /* Modern Glass Cards */
+    .citizen-card {
+        background: rgba(255, 255, 255, 0.4); 
+        backdrop-filter: blur(12px);
+        border: 1px solid rgba(255,255,255,0.5);
+        border-radius: 24px;
+        padding: 30px;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.01);
+    }
+    .citizen-card:hover { 
+        transform: translateY(-5px); 
+        box-shadow: 0 15px 35px rgba(0,0,0,0.04);
+        background: rgba(255, 255, 255, 0.5); 
+    }
+    
+    .list-item { 
+        display: flex; 
+        align-items: center; 
+        margin-bottom: 12px; 
+        color: #4a5553; 
+        font-size: 0.95rem; 
+        font-weight: 600;
+    }
+    .list-item i { 
+        color: #7a8c5f; 
+        margin-right: 12px; 
+        font-size: 0.85rem;
+    }
+
+    /* Why it matters toggle */
+    .impact-toggle {
+        background: rgba(255, 255, 255, 0.3); 
+        border-radius: 16px;
+        border: 1px solid rgba(255,255,255,0.4);
+        padding: 20px;
+        margin-top: 20px;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+    .impact-toggle:hover {
+        background: rgba(255, 255, 255, 0.5); 
+    }
+
+    /* Banner Strip */
+    .quick-tips {
+        background: #3e4a49;
+        color: #fff;
+        padding: 30px;
+        border-radius: 20px;
+        margin: 40px 20px;
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        flex-wrap: wrap;
+        box-shadow: 0 10px 25px rgba(62, 74, 73, 0.15);
+    }
+    .tip-box { text-align: center; flex: 1; min-width: 200px; padding: 10px; }
+
+    /* Action Button */
+    .earth-action-btn { 
+        background: transparent; 
+        border: 2px solid #7a8c5f; 
+        color: #5d6b49; 
+        padding: 12px 30px; 
+        border-radius: 12px; 
+        text-decoration: none; 
+        font-weight: 700; 
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        transition: 0.3s;
+    }
+    .earth-action-btn:hover { 
+        background: #7a8c5f; 
+        color: #ffffff; 
+        box-shadow: 0 5px 15px rgba(122, 140, 95, 0.2);
+    }
+</style>
+
+<script>
+    function toggleImpact() {
+        var x = document.getElementById("impact-text");
+        var arrow = document.getElementById("arrow");
+        if (x.style.display === "none") {
+            x.style.display = "block";
+            arrow.innerHTML = "▲";
+        } else {
+            x.style.display = "none";
+            arrow.innerHTML = "▼";
+        }
+    }
+</script>
+{% endblock %}

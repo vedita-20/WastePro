@@ -1,0 +1,147 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="dashboard-content" style="padding: 40px; background-color: #d6d9d2; min-height: 100vh; color: #4a5553; font-family: 'Inter', sans-serif;">
+    
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px;">
+        <div>
+            <h1 style="color: #2f3635; margin: 0; font-size: 2.2rem; font-weight: 800; letter-spacing: -1px;">Waste Classifications</h1>
+            <p style="color: #6b7775; margin-top: 5px; font-weight: 600;">Sustainability Registry & Metrics</p>
+        </div>
+        <button class="earth-btn-main" onclick="toggleForm()">+ Register Waste Type</button>
+    </div>
+
+    <div style="padding: 0; margin-bottom: 40px;">
+        <div style="background: rgba(255, 255, 255, 0.4); backdrop-filter: blur(12px); padding: 35px; border-radius: 24px; border: 1px solid rgba(255,255,255,0.5); display: flex; align-items: center; gap: 40px; box-shadow: 0 10px 30px rgba(0,0,0,0.02);">
+            <div style="height: 150px; width: 150px; position: relative;">
+                <canvas id="wasteDoughnut"></canvas>
+                <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center;">
+                    <span style="display: block; color: #7a8c5f; font-size: 1.5rem; font-weight: 900;">{{ rec_percent }}%</span>
+                </div>
+            </div>
+            
+            <div style="flex: 1;">
+                <h3 style="color:#6b7775; font-size:0.75rem; margin-bottom:20px; font-weight: 800; text-transform: uppercase; letter-spacing: 2px;">Registry Overview</h3>
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 25px;">
+                    <div>
+                        <p style="color: #8c9795; font-size: 0.7rem; font-weight: 800; margin: 0;">TOTAL TYPES</p>
+                        <h4 style="color: #2f3635; margin: 5px 0; font-size: 1.8rem; font-weight: 800;">{{ total }}</h4>
+                    </div>
+                    <div>
+                        <p style="color: #7a8c5f; font-size: 0.7rem; font-weight: 800; margin: 0;">RECYCLABLE</p>
+                        <h4 style="color: #2f3635; margin: 5px 0; font-size: 1.8rem; font-weight: 800;">{{ values[0] }}</h4>
+                    </div>
+                    <div>
+                        <p style="color: #a66a6a; font-size: 0.7rem; font-weight: 800; margin: 0;">NON-RECYCLABLE</p>
+                        <h4 style="color: #2f3635; margin: 5px 0; font-size: 1.8rem; font-weight: 800;">{{ values[1] }}</h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="addWasteForm" style="display:none; background: rgba(255, 255, 255, 0.5); padding: 35px; border-radius: 24px; border: 1px solid rgba(255,255,255,0.6); margin-bottom: 40px; animation: fadeInUp 0.4s ease-out;">
+        <h3 style="color: #2f3635; margin-bottom: 25px; font-size: 1.1rem; font-weight: 700;">New Classification Entry</h3>
+        <form action="{{ url_for('waste_type') }}" method="POST">
+            <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 20px; align-items: flex-end; margin-bottom: 25px;">
+                <div>
+                    <label class="earth-label">Type Name</label>
+                    <input type="text" name="type_name" placeholder="e.g., Polyethylene" class="earth-input" style="width: 100%; box-sizing: border-box;" required>
+                </div>
+                <div style="padding-bottom: 12px;">
+                    <label style="color:#4a5553; cursor:pointer; display: flex; align-items: center; gap: 12px; font-size: 0.85rem; font-weight: 700;">
+                        <input type="checkbox" name="recyclable" style="width: 20px; height: 20px; accent-color: #7a8c5f;">
+                        Recyclable Type
+                    </label>
+                </div>
+            </div>
+            <button type="submit" class="earth-save-btn">Confirm Registry</button>
+        </form>
+    </div>
+
+    <div style="background: rgba(255, 255, 255, 0.3); border-radius: 24px; overflow: hidden; border: 1px solid rgba(255,255,255,0.4); box-shadow: 0 10px 30px rgba(0,0,0,0.02);">
+        <table style="width: 100%; border-collapse: collapse; text-align: left;">
+            <thead style="background: rgba(0, 0, 0, 0.03);">
+                <tr style="color: #6b7775; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1.5px;">
+                    <th style="padding: 25px;">Code</th>
+                    <th style="padding: 25px;">Type Name</th>
+                    <th style="padding: 25px;">Status</th>
+                    <th style="padding: 25px; text-align: right;">Operations</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for w in waste_types %}
+                <tr class="earth-row">
+                    <td style="padding: 20px 25px;"><span style="color: #8c9795; font-family: monospace;">#{{ w.waste_id }}</span></td>
+                    <td style="padding: 20px 25px; color: #2f3635; font-weight: 700;">{{ w.type_name }}</td>
+                    <td style="padding: 20px 25px;">
+                        {% if w.recyclable %}
+                        <span class="status-pill recyclable">RECYCLABLE</span>
+                        {% else %}
+                        <span class="status-pill non-recyclable">NON-RECYCLABLE</span>
+                        {% endif %}
+                    </td>
+                    <td style="padding: 20px 25px; text-align: right;">
+                        <a href="{{ url_for('edit_waste', id=w.waste_id) }}" class="earth-action edit">EDIT</a>
+                        <a href="{{ url_for('delete_waste', id=w.waste_id) }}" class="earth-action delete" onclick="return confirm('Archive permanently?')">REMOVE</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<style>
+    .earth-label { display: block; margin-bottom: 8px; font-size: 0.7rem; font-weight: 800; color: #7e8a88; text-transform: uppercase; }
+    .earth-input { border: 1px solid rgba(0,0,0,0.08); background: rgba(255,255,255,0.6); padding: 12px 15px; border-radius: 12px; outline: none; transition: 0.3s; color: #2f3635; }
+    .earth-input:focus { background: rgba(255,255,255,0.9); border-color: #7a8c5f; }
+
+    .earth-btn-main { background: #3e4a49; color: #e9eceb; border: none; padding: 12px 28px; border-radius: 12px; font-weight: 700; cursor: pointer; transition: 0.3s; }
+    .earth-save-btn { background: #7a8c5f; color: #fff; border: none; padding: 14px 35px; border-radius: 12px; font-weight: 700; cursor: pointer; transition: 0.3s; text-transform: uppercase; font-size: 0.8rem; }
+
+    .earth-row { border-bottom: 1px solid rgba(0,0,0,0.03); transition: 0.3s; }
+    .earth-row:hover { background: rgba(255,255,255,0.2); }
+
+    .status-pill { padding: 5px 12px; border-radius: 8px; font-size: 0.65rem; font-weight: 800; }
+    .status-pill.recyclable { background: #c5ccbf; color: #4a5553; } /* Matching your GHAZIABAD tag */
+    .status-pill.non-recyclable { background: #d9b5b5; color: #7a4a4a; }
+
+    .earth-action { text-decoration: none; font-weight: 800; font-size: 0.75rem; margin-left: 15px; transition: 0.2s; }
+    .earth-action.edit { color: #5d6b49; }
+    .earth-action.delete { color: #a66a6a; }
+
+    @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+function toggleForm() {
+    const f = document.getElementById('addWasteForm');
+    f.style.display = (f.style.display === 'none' || f.style.display === '') ? 'block' : 'none';
+}
+
+const ctx = document.getElementById('wasteDoughnut').getContext('2d');
+new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+        labels: {{ labels|tojson }},
+        datasets: [{
+            data: {{ values|tojson }},
+            backgroundColor: ['#7a8c5f', '#a66a6a'],
+            borderColor: '#d6d9d2',
+            borderWidth: 5,
+            hoverOffset: 10
+        }]
+    },
+    options: {
+        maintainAspectRatio: true,
+        cutout: '80%',
+        plugins: { legend: { display: false } }
+    }
+});
+</script>
+{% endblock %}

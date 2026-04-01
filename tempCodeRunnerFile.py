@@ -1,0 +1,1 @@
+total_waste = cursor.fetchone()['q']

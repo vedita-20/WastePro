@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    :root { --neon-cyan: #00f2ff; }
+    .edit-container { display: flex; justify-content: center; align-items: center; min-height: 80vh ; margin-top: 30px; }
+    .edit-card { 
+        background: #0a0a0a; padding: 40px; border-radius: 20px; 
+        border-top: 4px solid var(--neon-cyan); width: 100%; max-width: 450px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.5); 
+    }
+    .form-group { margin-bottom: 20px; }
+    .form-group label { display: block; color: #666; font-size: 0.8rem; margin-bottom: 8px; text-transform: uppercase; }
+    .input-field { 
+        width: 100%; background: #000; border: 1px solid #222; padding: 12px; 
+        color: #fff; border-radius: 10px; transition: 0.3s; 
+    }
+    .input-field:focus { border-color: var(--neon-cyan); outline: none; box-shadow: 0 0 10px rgba(0, 242, 255, 0.2); }
+    .update-btn { 
+        background: var(--neon-cyan); color: #000; border: none; padding: 12px; 
+        width: 100%; border-radius: 30px; font-weight: 800; cursor: pointer; margin-top: 10px; 
+    }
+</style>
+
+<div class="edit-container" >
+    <div class="edit-card">
+        <h2 style="color: #fff; margin-bottom: 30px; font-weight: 800;">Update Facility #{{ c.center_id }}</h2>
+        
+        <form action="{{ url_for('edit_center', id=c.center_id) }}" method="POST">
+            <div class="form-group">
+                <label>Center Name</label>
+                <input type="text" name="center_name" value="{{ c.center_name }}" class="input-field" required>
+            </div>
+
+            <div class="form-group">
+                <label>Location</label>
+                <input type="text" name="location" value="{{ c.location }}" class="input-field" required>
+            </div>
+
+            <div class="form-group">
+                <label>Contact Number</label>
+                <input type="text" name="contact_number" value="{{ c.contact_number }}" class="input-field">
+            </div>
+
+            <button type="submit" class="update-btn">Confirm Changes</button>
+            <a href="{{ url_for('recycle_centre') }}" style="display: block; text-align: center; color: #444; margin-top: 20px; text-decoration: none; font-size: 0.9rem;">Discard Changes</a>
+        </form>
+    </div>
+</div>
+{% endblock %}

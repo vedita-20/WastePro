@@ -1,0 +1,281 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+    :root {
+        --primary: #7a8c5f;        /* Sage Green from your login page */
+        --secondary: #3e4a49;      /* Dark Sage/Admin color */
+        --bg: #d6d9d2;             /* Signature Stone background */
+        --text-dark: #2f3635;      /* Dark gray-green for text */
+        --text-light: #7e8a88;     /* Muted gray for subtitles */
+        --glass: rgba(255, 255, 255, 0.45); /* Glass effect from login card */
+        --glass-hover: rgba(255, 255, 255, 0.65);
+        --border: rgba(255, 255, 255, 0.6);
+    }
+
+    .citizen-theme {
+        color: var(--text-dark);
+        padding: 2rem;
+        max-width: 1200px;
+        margin: 0 auto;
+        font-family: 'Segoe UI', Roboto, sans-serif;
+    }
+
+    /* Full Page Background Match */
+    body {
+        background-color: var(--bg) !important;
+    }
+
+    /* Header Section */
+    .db-header-modern {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        margin-bottom: 3rem;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+        padding-bottom: 2rem;
+    }
+
+    .welcome-meta h1 {
+        font-size: 2.5rem;
+        font-weight: 800;
+        margin: 0;
+        letter-spacing: -1px;
+        color: var(--text-dark);
+    }
+
+    .welcome-meta p {
+        color: var(--text-light);
+        font-size: 1.1rem;
+        margin-top: 5px;
+    }
+
+    .level-badge {
+        background: rgba(122, 140, 95, 0.15);
+        border: 1px solid var(--primary);
+        padding: 0.75rem 1.5rem;
+        border-radius: 50px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: var(--secondary);
+        font-weight: 700;
+    }
+
+    /* Grid Layout */
+    .stats-row {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2.5rem;
+    }
+
+    .glass-card {
+        background: var(--glass);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid var(--border);
+        border-radius: 24px;
+        padding: 2rem;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 15px 35px -12px rgba(0, 0, 0, 0.05);
+    }
+
+    .glass-card:hover {
+        transform: translateY(-5px);
+        background: var(--glass-hover);
+        border-color: rgba(255, 255, 255, 0.8);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+    }
+
+    .glass-card h3 {
+        font-weight: 800;
+        color: var(--text-dark);
+        margin-top: 0;
+    }
+
+    .icon-circle {
+        width: 60px;
+        height: 60px;
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.8rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .green { background: rgba(122, 140, 95, 0.2); color: var(--primary); }
+    .orange { background: rgba(224, 142, 69, 0.2); color: #e08e45; }
+
+    .counter {
+        font-size: 3.5rem;
+        font-weight: 800;
+        margin: 0.5rem 0;
+        letter-spacing: -2px;
+        color: var(--text-dark);
+    }
+
+    .unit { color: var(--text-light); font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; }
+
+    /* Action Buttons */
+    .action-buttons {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        margin-top: 1rem;
+    }
+
+    .btn-primary, .btn-outline {
+        padding: 1rem;
+        border-radius: 12px;
+        text-decoration: none;
+        text-align: center;
+        font-weight: 800;
+        text-transform: uppercase;
+        font-size: 0.85rem;
+        letter-spacing: 1px;
+        transition: 0.3s;
+    }
+
+    .btn-primary { background: var(--secondary); color: #fff; }
+    .btn-primary:hover { background: #1a1e1e; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+
+    .btn-outline { border: 1px solid rgba(0, 0, 0, 0.1); color: var(--text-dark); background: rgba(255, 255, 255, 0.5); }
+    .btn-outline:hover { background: #fff; transform: translateY(-2px); }
+
+    /* Chart Area */
+    .dashboard-split {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 1.5rem;
+    }
+
+    @media (max-width: 768px) {
+        .dashboard-split {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    .chart-container { height: 300px; margin-top: 1rem; }
+
+    .tip-card {
+        background: rgba(122, 140, 95, 0.1);
+        border-left: 4px solid var(--primary);
+        padding: 1.5rem;
+        border-radius: 0 12px 12px 0;
+        margin-top: 1rem;
+    }
+    
+    .tip-card p {
+        color: var(--text-dark);
+        margin: 0;
+        font-size: 0.95rem;
+        line-height: 1.5;
+    }
+</style>
+
+<div class="db-container citizen-theme">
+    <header class="db-header-modern">
+        <div class="welcome-meta">
+            <span style="color: var(--primary); font-weight: 800; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 1px;">{{ now }}</span>
+            <h1>Welcome back, {{ username }}! ✨</h1>
+            <p>You've helped divert <strong>{{ total_waste }}kg</strong> from landfills.</p>
+        </div>
+        <div class="level-badge">
+            <span>🌿</span>
+            <strong>Eco-Warrior</strong>
+        </div>
+    </header>
+
+    <div class="stats-row">
+        <div class="glass-card">
+            <div class="icon-circle green">♻️</div>
+            <h3>Total Recycled</h3>
+            <h2 class="counter">{{ total_waste }}</h2>
+            <span class="unit">Kilograms</span>
+        </div>
+
+        <div class="glass-card">
+            <div class="icon-circle orange">📢</div>
+            <h3>Active Reports</h3>
+            <h2 class="counter">{{ status_count }}</h2>
+            <span class="unit">Pending Resolution</span>
+        </div>
+
+        <div class="glass-card">
+            <h3>Quick Actions</h3>
+            <div class="action-buttons">
+                <a href="{{ url_for('complaint') }}" class="btn-primary">Report Issue</a>
+                <a href="{{ url_for('recycle_centre') }}" class="btn-outline">Find Recycle Hub</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="dashboard-split">
+        <div class="glass-card">
+            <div style="display: flex; justify-content: space-between;">
+                <h3>Recycling Trend</h3>
+                <span class="unit">Last 7 Days</span>
+            </div>
+            <div class="chart-container">
+                <canvas id="citizenChart"></canvas>
+            </div>
+        </div>
+
+        <div class="glass-card">
+            <h3>Daily Insight</h3>
+            <div class="tip-card">
+                <p><strong>Did you know?</strong> Recycling one aluminum can saves enough energy to run a TV for three hours!</p>
+            </div>
+            <br>
+            <a href="{{ url_for('awareness') }}" style="color: var(--primary); font-weight: 700; text-decoration: none; font-size: 0.9rem;">Explore Awareness →</a>
+        </div>
+    </div>
+</div>
+
+<script>
+    const ctx = document.getElementById('citizenChart').getContext('2d');
+    
+    // Adjusted gradient to use the soft Sage Green theme
+    let gradient = ctx.createLinearGradient(0, 0, 0, 300);
+    gradient.addColorStop(0, 'rgba(122, 140, 95, 0.4)');
+    gradient.addColorStop(1, 'rgba(122, 140, 95, 0)');
+
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: {{ days | tojson if days else ["Mon", "Tue", "Wed"] }},
+            datasets: [{
+                data: {{ values | tojson if values else [0, 0, 0] }},
+                borderColor: '#7a8c5f', /* Sage green line */
+                backgroundColor: gradient,
+                borderWidth: 3,
+                fill: true,
+                tension: 0.4,
+                pointRadius: 5,
+                pointBackgroundColor: '#fff',
+                pointBorderColor: '#7a8c5f',
+                pointBorderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+                y: { 
+                    display: true,
+                    ticks: { color: '#7e8a88' },
+                    grid: { color: 'rgba(0,0,0,0.03)' }
+                },
+                x: { 
+                    ticks: { color: '#7e8a88' }, 
+                    grid: { display: false } 
+                }
+            }
+        }
+    });
+</script>
+{% endblock %}

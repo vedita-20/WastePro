@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+
+{% block content %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+<div class="dashboard-content" style="padding: 40px; background-color: #d6d9d2; min-height: 100vh; color: #4a5553; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+    
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; padding: 0 30px;">
+        <div>
+            <h1 style="color: #2f3635; margin: 0; font-size: 2.2rem; font-weight: 800; letter-spacing: -1px;">Recycling Facilities</h1>
+            <p style="color: #6b7775; margin-top: 5px; font-weight: 600;">Directing logistical flow to verified disposal centers.</p>
+        </div>
+        
+        <form action="{{ url_for('recycle_centre') }}" method="GET" style="display: flex; align-items: center; gap: 15px;">
+            <div style="position: relative;">
+                <i class="fas fa-search" style="position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #8c9795; font-size: 0.9rem;"></i>
+                <input type="text" name="search" class="earth-input" placeholder="Filter by name or city..." style="width: 300px; padding-left: 40px; box-sizing: border-box;">
+            </div>
+        </form>
+    </div>
+
+    <div style="margin: 0 30px 40px 30px; background: rgba(255, 255, 255, 0.3); border-radius: 24px; overflow: hidden; border: 1px solid rgba(255,255,255,0.4); box-shadow: 0 10px 30px rgba(0,0,0,0.02);">
+        <table style="width: 100%; border-collapse: collapse; text-align: left;">
+            <thead style="background: rgba(0, 0, 0, 0.03);">
+                <tr style="color: #6b7775; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1.5px;">
+                    <th style="padding: 25px;">Facility Identity</th>
+                    <th style="padding: 25px;">Location Address</th>
+                    <th style="padding: 25px;">Registry Contact</th>
+                    <th style="padding: 25px; text-align: right;">Operations</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for c in centers %}
+                <tr class="earth-row">
+                    <td style="padding: 20px 25px;">
+                        <div style="color: #2f3635; font-weight: 700; font-size: 1rem;">{{ c.center_name }}</div>
+                        <div style="color: #8c9795; font-size: 0.75rem; font-family: monospace; letter-spacing: 0.5px; margin-top: 2px;">FAC_ID: #{{ c.center_id }}</div>
+                    </td>
+                    <td style="padding: 20px 25px; color: #4a5553;">{{ c.location }}</td>
+                    <td style="padding: 20px 25px;">
+                        <span style="color: #7a8c5f; font-family: monospace; font-weight: 700; font-size: 0.95rem;">
+                            {{ c.contact_number or '---' }}
+                        </span>
+                    </td>
+                    <td style="padding: 20px 25px; text-align: right;">
+                        <a href="https://www.google.com/maps/search/?api=1&query={{ c.center_name|urlencode }}+{{ c.location|urlencode }}" 
+                           target="_blank" class="earth-map-btn">
+                            <i class="fas fa-directions" style="margin-right: 6px;"></i>Get Directions
+                        </a>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="4" style="padding: 100px 20px; text-align: center; color: #8c9795; font-style: italic;">
+                        <div style="font-size: 2.5rem; margin-bottom: 10px; color: #c5ccbf;">∅</div>
+                        No facilities match your search criteria.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<style>
+    /* Inputs */
+    .earth-input { 
+        border: 1px solid rgba(0,0,0,0.08); 
+        background: rgba(255,255,255,0.6); 
+        padding: 12px 15px; 
+        border-radius: 12px; 
+        outline: none; 
+        transition: 0.3s; 
+        color: #2f3635; 
+        font-size: 0.85rem;
+    }
+    .earth-input:focus { 
+        background: rgba(255,255,255,0.9); 
+        border-color: #7a8c5f; 
+        box-shadow: 0 0 0 4px rgba(122, 140, 95, 0.1); 
+    }
+
+    /* UI Elements */
+    .earth-row { 
+        border-bottom: 1px solid rgba(0,0,0,0.03); 
+        transition: 0.3s; 
+    }
+    .earth-row:hover { 
+        background: rgba(255,255,255,0.2); 
+    }
+
+    /* Action Buttons */
+    .earth-map-btn { 
+        background: #3e4a49; 
+        color: #e9eceb; 
+        border: none; 
+        padding: 10px 20px; 
+        border-radius: 10px; 
+        font-weight: 700; 
+        cursor: pointer; 
+        transition: 0.3s; 
+        text-decoration: none; 
+        font-size: 0.75rem; 
+        display: inline-flex; 
+        align-items: center; 
+        text-transform: uppercase; 
+        letter-spacing: 0.5px;
+    }
+    .earth-map-btn:hover { 
+        background: #2f3635; 
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+</style>
+{% endblock %}

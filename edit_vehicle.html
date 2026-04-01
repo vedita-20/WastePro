@@ -1,0 +1,145 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="dashboard-content" style="padding: 40px; background-color: #d6d9d2; min-height: 100vh; color: #4a5553; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+    
+    <div style="margin-bottom: 25px;">
+        <a href="{{ url_for('vehicle') }}" style="color: #6b7775; text-decoration: none; font-size: 0.85rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; display: flex; align-items: center; gap: 8px;">
+            <i class="fas fa-arrow-left"></i> Back to Fleet List
+        </a>
+    </div>
+
+    <div style="max-width: 700px; margin: 0 auto; background: rgba(255, 255, 255, 0.4); backdrop-filter: blur(12px); padding: 40px; border-radius: 24px; border: 1px solid rgba(255,255,255,0.5); border-top: 6px solid #7a8c5f; box-shadow: 0 20px 40px rgba(0,0,0,0.04);">
+        
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 35px;">
+            <div>
+                <h2 style="font-size: 1.6rem; font-weight: 800; color: #2f3635; margin: 0;">Update Vehicle</h2>
+                <p style="color: #7a8c5f; font-weight: 700; font-family: monospace; margin-top: 4px;">SYSTEM_ID: #{{ v.vehicle_id }}</p>
+            </div>
+            <span class="fleet-badge">{{ v.vehicle_number }}</span>
+        </div>
+
+        <form action="{{ url_for('edit_vehicle', id=v.vehicle_id) }}" method="POST">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 25px; margin-bottom: 30px;">
+                
+                <div class="input-group">
+                    <label class="earth-label">Plate Number</label>
+                    <input type="text" name="vehicle_number" class="earth-input" value="{{ v.vehicle_number }}" required>
+                </div>
+                
+                <div class="input-group">
+                    <label class="earth-label">Load Capacity (KG)</label>
+                    <input type="number" name="capacity_kg" class="earth-input" value="{{ v.capacity_kg }}" required>
+                </div>
+
+                <div class="input-group">
+                    <label class="earth-label">Assigned Driver</label>
+                    <input type="text" name="driver_name" class="earth-input" value="{{ v.driver_name }}" required>
+                </div>
+
+                <div class="input-group">
+                    <label class="earth-label">Operational Status</label>
+                    <select name="status" class="earth-input custom-select">
+                        <option value="Active" {% if v.status == 'Active' %}selected{% endif %}>Active</option>
+                        <option value="Maintenance" {% if v.status == 'Maintenance' %}selected{% endif %}>Maintenance</option>
+                        <option value="Retired" {% if v.status == 'Retired' %}selected{% endif %}>Retired</option>
+                    </select>
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 15px; margin-top: 35px; border-top: 1px solid rgba(0,0,0,0.05); padding-top: 30px;">
+                <button type="submit" class="earth-save-btn" style="flex: 2;">
+                    Update Fleet Records
+                </button>
+                <a href="{{ url_for('vehicle') }}" class="earth-cancel-btn" style="flex: 1;">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+    /* Earth Sage Styling Toolkit */
+    .earth-label { 
+        display: block; 
+        margin-bottom: 10px; 
+        font-size: 0.7rem; 
+        font-weight: 800; 
+        color: #7e8a88; 
+        text-transform: uppercase; 
+        letter-spacing: 0.5px; 
+    }
+    
+    .earth-input { 
+        width: 100%;
+        box-sizing: border-box;
+        border: 1px solid rgba(0,0,0,0.08); 
+        background: rgba(255,255,255,0.6); 
+        padding: 14px 18px; 
+        border-radius: 12px; 
+        outline: none; 
+        transition: 0.3s; 
+        color: #2f3635; 
+        font-size: 0.95rem;
+        font-weight: 600;
+    }
+    
+    .earth-input:focus { 
+        background: rgba(255,255,255,0.9); 
+        border-color: #7a8c5f; 
+        box-shadow: 0 0 0 4px rgba(122, 140, 95, 0.1);
+    }
+
+    .fleet-badge { 
+        background: #3e4a49; 
+        color: #fff; 
+        padding: 8px 18px; 
+        border-radius: 8px; 
+        font-family: monospace; 
+        font-weight: 800; 
+        font-size: 1rem;
+        letter-spacing: 1px;
+    }
+
+    .earth-save-btn { 
+        background: #7a8c5f; 
+        color: #fff; 
+        border: none; 
+        padding: 16px; 
+        border-radius: 14px; 
+        font-weight: 800; 
+        cursor: pointer; 
+        transition: 0.3s; 
+        text-transform: uppercase;
+        font-size: 0.85rem;
+        letter-spacing: 1px;
+    }
+    
+    .earth-save-btn:hover { 
+        background: #5d6b49; 
+        transform: translateY(-2px); 
+        box-shadow: 0 10px 20px rgba(122, 140, 95, 0.2); 
+    }
+
+    .earth-cancel-btn { 
+        background: rgba(0,0,0,0.05); 
+        color: #6b7775; 
+        padding: 16px; 
+        border-radius: 14px; 
+        font-weight: 700; 
+        text-decoration: none; 
+        text-align: center; 
+        transition: 0.3s;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+    }
+    .earth-cancel-btn:hover { background: rgba(166, 106, 106, 0.1); color: #a66a6a; }
+
+    .custom-select {
+        appearance: none;
+        background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234a5553' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+        background-repeat: no-repeat;
+        background-position: right 15px center;
+        background-size: 15px;
+    }
+</style>
+{% endblock %}

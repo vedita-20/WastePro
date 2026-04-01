@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="dashboard-content" style="display: flex; justify-content: center; align-items: center; min-height: 90vh; background-color: #d6d9d2; padding: 20px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+    
+    <div style="background: rgba(255, 255, 255, 0.4); backdrop-filter: blur(12px); padding: 45px; border-radius: 24px; border: 1px solid rgba(255,255,255,0.5); border-top: 6px solid #7a8c5f; width: 100%; max-width: 450px; box-shadow: 0 20px 40px rgba(0,0,0,0.05);">
+        
+        <div style="text-align: center; margin-bottom: 35px;">
+            <h2 style="color: #2f3635; margin: 0; font-size: 1.6rem; font-weight: 800; letter-spacing: -0.5px;">Edit Classification</h2>
+            <p style="color: #7a8c5f; font-size: 0.75rem; font-weight: 800; margin-top: 8px; text-transform: uppercase; letter-spacing: 1.5px;">
+                Ref: #{{ w.waste_id }}
+            </p>
+        </div>
+
+        <form action="{{ url_for('edit_waste', id=w.waste_id) }}" method="POST">
+            <div style="margin-bottom: 25px;">
+                <label class="earth-label">Waste Type Name</label>
+                <input type="text" name="type_name" value="{{ w.type_name }}" class="earth-input" style="width: 100%; box-sizing: border-box;" required>
+            </div>
+
+            <div style="margin-bottom: 35px; background: rgba(255, 255, 255, 0.3); padding: 20px; border-radius: 15px; border: 1px solid rgba(0,0,0,0.03);">
+                <label style="color: #2f3635; cursor: pointer; display: flex; align-items: center; gap: 15px; font-weight: 700; font-size: 0.95rem;">
+                    <input type="checkbox" name="recyclable" {% if w.recyclable %}checked{% endif %} 
+                           style="width: 20px; height: 20px; accent-color: #7a8c5f;">
+                    Recyclable material
+                </label>
+                <div style="margin-left: 35px; margin-top: 8px;">
+                    <p style="color: #6b7775; font-size: 0.75rem; margin: 0; line-height: 1.4; font-style: italic;">
+                        Enable this if the material can be processed at local sustainability centers.
+                    </p>
+                </div>
+            </div>
+
+            <div style="display: flex; align-items: center; gap: 20px;">
+                <button type="submit" class="earth-save-btn" style="flex: 2; height: 55px;">
+                    Save Classification
+                </button>
+                <a href="{{ url_for('waste_type') }}" class="earth-cancel-link" style="flex: 1;">
+                    Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+    /* Earth Sage UI Toolkit */
+    .earth-label { 
+        display: block; 
+        margin-bottom: 10px; 
+        font-size: 0.7rem; 
+        font-weight: 800; 
+        color: #7e8a88; 
+        text-transform: uppercase; 
+        letter-spacing: 1px; 
+    }
+    
+    .earth-input { 
+        border: 1px solid rgba(0,0,0,0.08); 
+        background: rgba(255,255,255,0.6); 
+        padding: 14px 18px; 
+        border-radius: 12px; 
+        outline: none; 
+        transition: 0.3s; 
+        color: #2f3635; 
+        font-size: 1rem;
+        font-weight: 600;
+    }
+    
+    .earth-input:focus { 
+        background: rgba(255,255,255,0.9); 
+        border-color: #7a8c5f; 
+        box-shadow: 0 0 0 4px rgba(122, 140, 95, 0.1);
+    }
+
+    .earth-save-btn { 
+        background: #3e4a49; 
+        color: #fff; 
+        border: none; 
+        border-radius: 14px; 
+        font-weight: 700; 
+        cursor: pointer; 
+        transition: 0.3s; 
+        text-transform: uppercase;
+        font-size: 0.85rem;
+        letter-spacing: 1px;
+    }
+    
+    .earth-save-btn:hover { 
+        background: #2f3635; 
+        transform: translateY(-2px); 
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1); 
+    }
+
+    .earth-cancel-link {
+        text-align: center;
+        color: #a66a6a;
+        text-decoration: none;
+        font-size: 0.75rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        transition: 0.3s;
+    }
+    
+    .earth-cancel-link:hover {
+        opacity: 0.6;
+    }
+</style>
+{% endblock %}
